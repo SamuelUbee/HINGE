@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="fr-CA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Une petite question… 🌸</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fde8ee;
+    --card: #fffafb;
+    --pink: #f48fb1;
+    --pink-dark: #e05a8a;
+    --text: #6b3a4b;
+    --soft: #fbd3df;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Quicksand', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    padding: 20px;
+  }
+
+  /* cœurs qui flottent en arrière-plan */
+  .floaty {
+    position: fixed;
+    bottom: -40px;
+    font-size: 22px;
+    opacity: .55;
+    pointer-events: none;
+    animation: rise linear forwards;
+    z-index: 0;
+  }
+  @keyframes rise {
+    to { transform: translateY(-115vh) rotate(25deg); opacity: 0; }
+  }
+
+  .card {
+    position: relative;
+    z-index: 1;
+    background: var(--card);
+    border-radius: 28px;
+    padding: 40px 32px;
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 12px 40px rgba(224, 90, 138, .18);
+    border: 3px solid var(--soft);
+  }
+  .page { display: none; animation: pop .5s ease; }
+  .page.active { display: block; }
+  @keyframes pop {
+    from { opacity: 0; transform: scale(.92) translateY(10px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  h1 {
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
+    font-size: 1.85rem;
+    line-height: 1.45;
+    color: var(--pink-dark);
+    margin-bottom: 22px;
+  }
+  .flower {
+    display: inline-block;
+    animation: sway 2.4s ease-in-out infinite;
+  }
+  .flower.right { animation-delay: 1.2s; }
+  @keyframes sway {
+    0%, 100% { transform: rotate(-12deg); }
+    50% { transform: rotate(12deg); }
+  }
+
+  .dog {
+    width: 100%;
+    max-width: 300px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 24px;
+    border: 5px solid var(--soft);
+    margin: 4px auto 26px;
+    display: block;
+    box-shadow: 0 6px 18px rgba(224, 90, 138, .15);
+  }
+
+  .buttons {
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    align-items: center;
+    min-height: 60px;
+  }
+  button {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 999px;
+    padding: 14px 34px;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .yes {
+    background: var(--pink-dark);
+    color: white;
+    box-shadow: 0 6px 16px rgba(224, 90, 138, .35);
+  }
+  .yes:hover { transform: scale(1.08); }
+  .no {
+    background: white;
+    color: var(--pink-dark);
+    border: 2px solid var(--pink);
+    transition: left .25s ease, top .25s ease;
+    touch-action: none;
+  }
+
+  label.title {
+    display: block;
+    font-weight: 700;
+    margin: 18px 0 10px;
+    font-size: 1.05rem;
+  }
+  .row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  input[type="date"], input[type="time"] {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: 16px;
+    border: 2px solid var(--soft);
+    background: white;
+    outline: none;
+    min-width: 150px;
+  }
+  input:focus { border-color: var(--pink); }
+
+  .foods {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .food {
+    background: white;
+    border: 2px solid var(--soft);
+    border-radius: 18px;
+    padding: 12px 6px;
+    font-size: .95rem;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .food span { display: block; font-size: 1.8rem; margin-bottom: 4px; }
+  .food:hover { transform: translateY(-3px); }
+  .food.selected {
+    background: var(--soft);
+    border-color: var(--pink-dark);
+    transform: scale(1.04);
+  }
+
+  .next { margin-top: 26px; }
+  .next:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .hint { font-size: .85rem; margin-top: 10px; min-height: 1.2em; opacity: .8; }
+
+  .final-text {
+    font-size: 1.25rem;
+    line-height: 1.7;
+    font-weight: 600;
+  }
+  .final-text strong { color: var(--pink-dark); }
+  .big-heart {
+    font-size: 4rem;
+    display: block;
+    margin: 6px 0 14px;
+    animation: beat 1.1s ease-in-out infinite;
+  }
+  @keyframes beat {
+    0%, 100% { transform: scale(1); }
+    30% { transform: scale(1.18); }
+    60% { transform: scale(.96); }
+  }
+
+  @media (max-width: 420px) {
+    .card { padding: 32px 20px; }
+    h1 { font-size: 1.5rem; }
+    .foods { grid-template-columns: repeat(2, 1fr); }
+    #activities .food:last-child { grid-column: span 2; }
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- PAGE 1 -->
+  <section class="page active" id="page1">
+    <h1>
+      <span class="flower">🌸</span>
+      Est-ce que tu veux aller en date avec moi?
+      <span class="flower right">🌸</span>
+    </h1>
+    <img class="dog"
+         src="https://images.unsplash.com/photo-1554300668-50f3521dc276?fm=jpg&q=70&w=700&auto=format&fit=crop"
+         alt="Un petit bulldog trop cute"
+         onerror="this.outerHTML='<div style=&quot;font-size:6rem;margin:10px 0 24px&quot;>🐶</div>'">
+    <div class="buttons">
+      <button class="yes" id="yesBtn">Oui 💕</button>
+      <button class="no" id="noBtn">Non</button>
+    </div>
+  </section>
+
+  <!-- PAGE 2 -->
+  <section class="page" id="page2">
+    <h1>Cool… quand es-tu dispo? 🗓️</h1>
+
+    <label class="title">Choisis une date et une heure</label>
+    <div class="row">
+      <input type="date" id="dateInput">
+      <input type="time" id="timeInput" value="19:00">
+    </div>
+
+    <button class="yes next" id="dateNextBtn">Suivant 💌</button>
+    <p class="hint" id="dateHint">Choisis une date et une heure 🌷</p>
+  </section>
+
+  <!-- PAGE 3 : bouffe -->
+  <section class="page" id="pageFood">
+    <h1>Qu'est-ce qu'on mange? 😋</h1>
+    <div class="foods" id="foods">
+      <button class="food" data-food="sushi 🍣"><span>🍣</span>Sushi</button>
+      <button class="food" data-food="pizza 🍕"><span>🍕</span>Pizza</button>
+      <button class="food" data-food="pasta 🍝"><span>🍝</span>Pasta</button>
+      <button class="food" data-food="burgers 🍔"><span>🍔</span>Burgers</button>
+      <button class="food" data-food="tacos 🌮"><span>🌮</span>Tacos</button>
+      <button class="food" data-food="steak 🥩"><span>🥩</span>Steak</button>
+    </div>
+
+    <button class="yes next" id="confirmBtn" disabled>Suivant 💌</button>
+    <p class="hint" id="hint">Choisis ce qui te fait envie 🌷</p>
+  </section>
+
+  <!-- PAGE 4 : activité -->
+  <section class="page" id="pageActivity">
+    <h1>Et on fait quoi? 🎉</h1>
+    <div class="foods" id="activities">
+      <button class="food" data-act="un escape game 🔐"><span>🔐</span>Escape game</button>
+      <button class="food" data-act="du cinéma 🎬"><span>🎬</span>Cinéma</button>
+      <button class="food" data-act="prendre un verre 🍹"><span>🍹</span>Prendre un verre</button>
+      <button class="food" data-act="une randonnée 🥾"><span>🥾</span>Randonnée</button>
+      <button class="food" data-act="une surprise 🎁"><span>🎁</span>Surprise</button>
+    </div>
+
+    <button class="yes next" id="actBtn" disabled>C'est parfait 💌</button>
+    <p class="hint" id="actHint">Choisis une activité 🌷</p>
+  </section>
+
+  <!-- PAGE FINALE -->
+  <section class="page" id="page3">
+    <span class="big-heart">💖</span>
+    <h1>Content que tu aies dit oui!</h1>
+    <p class="final-text" id="finalText"></p>
+  </section>
+
+</div>
+
+<script>
+  // ---- cœurs et fleurs qui flottent ----
+  const floaties = ['💗', '🌸', '💕', '🌷', '💖', '✨'];
+  function spawnFloaty() {
+    const el = document.createElement('div');
+    el.className = 'floaty';
+    el.textContent = floaties[Math.floor(Math.random() * floaties.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.fontSize = (16 + Math.random() * 18) + 'px';
+    el.style.animationDuration = (7 + Math.random() * 6) + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 14000);
+  }
+  setInterval(spawnFloaty, 700);
+
+  function show(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  // ---- PAGE 1 : le bouton Non se sauve ----
+  const noBtn = document.getElementById('noBtn');
+  const noTexts = ['Non', 'T\'es sûre? 🥺', 'Vraiment?', 'Penses-y encore 😢', 'Allez… 🙏', 'Hihi, essaie encore'];
+  let noCount = 0;
+
+  function runAway(e) {
+    if (e) e.preventDefault();
+    const w = noBtn.offsetWidth, h = noBtn.offsetHeight;
+    const pad = 16;
+    const maxX = window.innerWidth - w - pad;
+    const maxY = window.innerHeight - h - pad;
+    noBtn.style.position = 'fixed';
+    noBtn.style.zIndex = '10';
+    noBtn.style.left = Math.max(pad, Math.random() * maxX) + 'px';
+    noBtn.style.top = Math.max(pad, Math.random() * maxY) + 'px';
+    noCount++;
+    noBtn.textContent = noTexts[noCount % noTexts.length];
+  }
+  noBtn.addEventListener('mouseenter', runAway);
+  noBtn.addEventListener('touchstart', runAway, { passive: false });
+  noBtn.addEventListener('click', runAway);
+
+  document.getElementById('yesBtn').addEventListener('click', () => {
+    noBtn.style.display = 'none';
+    for (let i = 0; i < 20; i++) setTimeout(spawnFloaty, i * 60);
+    show('page2');
+  });
+
+  // ---- PAGE 2 : date, heure, bouffe ----
+  const dateInput = document.getElementById('dateInput');
+  const timeInput = document.getElementById('timeInput');
+  const confirmBtn = document.getElementById('confirmBtn');
+  const hint = document.getElementById('hint');
+  let food = null;
+
+  // pas de date dans le passé
+  const t = new Date();
+  dateInput.min = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+
+  document.querySelectorAll('#foods .food').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#foods .food').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      food = btn.dataset.food;
+      check();
+    });
+  });
+  const dateNextBtn = document.getElementById('dateNextBtn');
+  const dateHint = document.getElementById('dateHint');
+  dateInput.addEventListener('input', checkDate);
+  timeInput.addEventListener('input', checkDate);
+
+  function checkDate() {
+    const ok = dateInput.value && timeInput.value;
+    dateNextBtn.disabled = !ok;
+    dateHint.textContent = ok ? 'Yay! 🥰' : 'Choisis une date et une heure 🌷';
+  }
+  checkDate();
+
+  dateNextBtn.addEventListener('click', () => show('pageFood'));
+
+  function check() {
+    confirmBtn.disabled = !food;
+    hint.textContent = food ? 'Miam! 🥰' : 'Choisis ce qui te fait envie 🌷';
+  }
+
+  confirmBtn.addEventListener('click', () => show('pageActivity'));
+
+  // ---- PAGE ACTIVITÉ ----
+  const actBtn = document.getElementById('actBtn');
+  let activity = null;
+  document.querySelectorAll('#activities .food').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#activities .food').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      activity = btn.dataset.act;
+      actBtn.disabled = false;
+      document.getElementById('actHint').textContent = 'Trop hâte! 🥰';
+    });
+  });
+
+  actBtn.addEventListener('click', () => {
+    const [y, m, d] = dateInput.value.split('-').map(Number);
+    const [hh, mm] = timeInput.value.split(':');
+    const date = new Date(y, m - 1, d);
+    const dateTxt = date.toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long' });
+    const timeTxt = `${parseInt(hh, 10)} h ${mm}`;
+
+    document.getElementById('finalText').innerHTML =
+      `Je viens te chercher le <strong>${dateTxt}</strong> à <strong>${timeTxt}</strong> 🚗💨<br>` +
+      `Au menu : <strong>${food}</strong><br>` +
+      `Ensuite : <strong>${activity}</strong> 🌸`;
+
+    for (let i = 0; i < 30; i++) setTimeout(spawnFloaty, i * 50);
+    show('page3');
+  });
+</script>
+</body>
+</html>
