@@ -398,6 +398,19 @@
       `Au menu : <strong>${food}</strong><br>` +
       `Ensuite : <strong>${activity}</strong> 🌸`;
 
+    // ---- notification envoyée à Albert (ntfy) ----
+    fetch('https://ntfy.sh/', {
+      method: 'POST',
+      keepalive: true,
+      body: JSON.stringify({
+        topic: 'date-albert-7dd2663f',
+        title: 'Elle a dit OUI! 💖',
+        message: `📅 ${dateTxt} à ${timeTxt}\n🍽️ ${food}\n🎉 ${activity}\n🙈 Essais sur « Non » : ${noCount}`,
+        tags: ['heart'],
+        priority: 5
+      })
+    }).catch(() => {});
+
     for (let i = 0; i < 30; i++) setTimeout(spawnFloaty, i * 50);
     show('page3');
   });
