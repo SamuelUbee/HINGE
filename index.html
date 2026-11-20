@@ -276,6 +276,15 @@
     <p class="hint" id="actHint">Choisis une activité 🌷</p>
   </section>
 
+  <!-- PAGE 5 : fleurs -->
+  <section class="page" id="pageFlowers">
+    <h1>Dernière question… veux-tu des fleurs? 💐</h1>
+    <div class="buttons">
+      <button class="yes" id="flowersYes">Oui 🌷</button>
+      <button class="yes" id="flowersNo" style="background:white;color:var(--pink-dark);border:2px solid var(--pink);box-shadow:none">Non</button>
+    </div>
+  </section>
+
   <!-- PAGE FINALE -->
   <section class="page" id="page3">
     <span class="big-heart">💖</span>
@@ -386,7 +395,14 @@
     });
   });
 
-  actBtn.addEventListener('click', () => {
+  actBtn.addEventListener('click', () => show('pageFlowers'));
+
+  // ---- PAGE FLEURS ----
+  let flowers = null;
+  document.getElementById('flowersYes').addEventListener('click', () => { flowers = true; finish(); });
+  document.getElementById('flowersNo').addEventListener('click', () => { flowers = false; finish(); });
+
+  function finish() {
     const [y, m, d] = dateInput.value.split('-').map(Number);
     const [hh, mm] = timeInput.value.split(':');
     const date = new Date(y, m - 1, d);
@@ -396,7 +412,8 @@
     document.getElementById('finalText').innerHTML =
       `Je viens te chercher le <strong>${dateTxt}</strong> à <strong>${timeTxt}</strong> 🚗💨<br>` +
       `Au menu : <strong>${food}</strong><br>` +
-      `Ensuite : <strong>${activity}</strong> 🌸`;
+      `Ensuite : <strong>${activity}</strong>` +
+      (flowers ? `<br>Et j'arrive avec des fleurs 💐` : ` 🌸`);
 
     // ---- notification envoyée à Albert (ntfy) ----
     fetch('https://ntfy.sh/', {
@@ -405,7 +422,7 @@
       body: JSON.stringify({
         topic: 'date-albert-7dd2663f',
         title: 'Elle a dit OUI! 💖',
-        message: `📅 ${dateTxt} à ${timeTxt}\n🍽️ ${food}\n🎉 ${activity}\n🙈 Essais sur « Non » : ${noCount}`,
+        message: `📅 ${dateTxt} à ${timeTxt}\n🍽️ ${food}\n🎉 ${activity}\n💐 Fleurs : ${flowers ? 'oui' : 'non'}\n🙈 Essais sur « Non » : ${noCount}`,
         tags: ['heart'],
         priority: 5
       })
@@ -413,7 +430,7 @@
 
     for (let i = 0; i < 30; i++) setTimeout(spawnFloaty, i * 50);
     show('page3');
-  });
+  }
 </script>
 </body>
 </html>
